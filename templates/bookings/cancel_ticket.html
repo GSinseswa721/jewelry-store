@@ -1,0 +1,42 @@
+<!-- templates/bookings/cancel_ticket.html -->
+{% extends 'base.html' %}
+
+{% block title %}Cancel Ticket{% endblock %}
+
+{% block content %}
+<div class="py-8">
+    <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-red-600 p-6 text-white">
+                <h2 class="text-2xl font-bold">Cancel Ticket</h2>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold">Are you sure you want to cancel this ticket?</h3>
+                    <p class="text-gray-600 mt-2">This action cannot be undone.</p>
+                    
+                    <div class="mt-4 p-4 border rounded-lg">
+                        <p><span class="font-medium">Ticket Type:</span> {{ ticket.ticket_type.name }}</p>
+                        <p><span class="font-medium">Seat Number:</span> {{ ticket.seat.seat_number }}</p>
+                        <p><span class="font-medium">Price:</span> ${{ ticket.price.price }}</p>
+                        <p><span class="font-medium">Booking Date:</span> {{ ticket.created_at|date:"F j, Y" }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <form method="post" class="w-1/2">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors">
+                            Yes, Cancel Ticket
+                        </button>
+                    </form>
+                    
+                    <a href="{% url 'profile' %}" class="w-1/2 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors text-center">
+                        No, Go Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

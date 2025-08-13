@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ticket-booking
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn ticket_booking_system.wsgi:application --workers 3 --bind 0.0.0.0:10000
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: ticket_booking_system.settings
+      - key: SECRET_KEY
+        value: QTkcea_sqNesmHFLNF9s0rNoo3DcNCURKRLX7u5bfWgRTQJpzE99CSpdbwa1AC4IAmQ

@@ -1,0 +1,145 @@
+<!-- templates/bookings/index.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}JewelryHub - Discover beautiful Jewelry{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="relative rounded-2xl overflow-hidden mb-16 shadow-xl h-[410px] sm:h-[600px] lg:h-[550px]">
+            <div class="absolute inset-0 h-full">
+                <img src="{% static 'images/background.jpg' %}" alt="Jewelry Collection" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-r from-rose-700 to-transparent opacity-50"></div>
+            </div>
+            <div class="relative px-8 py-16 sm:px-16 sm:py-24 lg:py-32 h-full flex flex-col justify-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    Discover beautiful Jewelry
+                </h1>
+                <p class="mt-6 max-w-lg text-xl text-white">
+                    Explore our exquisite collection of gold, silver, and pearl jewelry. Find the perfect piece for any occasion.
+                </p>
+                <div class="mt-10 space-y-1">
+                    {% if user.is_authenticated %}
+                        <a href="#jewelry-collection" class="inline-block bg-white py-3 px-8 rounded-md font-medium text-black hover:bg-rose-50 mr-4">
+                            Browse Collection
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="inline-block bg-white py-3 px-8 rounded-md font-medium text-black hover:bg-rose-50 mr-4">
+                            Join and Explore
+                        </a>
+                        <a href="{% url 'login' %}" class="inline-block border-2 border-white py-3 px-8 rounded-md font-medium text-black hover:bg-white hover:text-rose-700">
+                            Sign In
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter Form -->
+        <div class="bg-gray-50 rounded-lg p-6 shadow mb-12">
+            <h2 class="text-2xl font-bold text-black mb-6">Find Your Perfect Jewelry</h2>
+            <form method="get" action="{% url 'index' %}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="{{ search_form.search.id_for_label }}" class="block text-sm font-medium text-black mb-1">Search</label>
+                    {{ search_form.search }}
+                </div>
+                <div>
+                    <label for="{{ search_form.category.id_for_label }}" class="block text-sm font-medium text-black mb-1">Category</label>
+                    {{ search_form.category }}
+                </div>
+                <div>
+                    <label for="{{ search_form.item_type.id_for_label }}" class="block text-sm font-medium text-black mb-1">Type</label>
+                    {{ search_form.item_type }}
+                </div>
+                <div class="md:col-span-4">
+                    <button type="submit" class="w-full md:w-auto bg-rose-600 text-white py-2 px-8 rounded-md hover:bg-rose-700 transition-colors">
+                        Search Jewelry
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jewelry Collection -->
+        <div id="jewelry-collection" class="text-center mb-12">
+            <h2 class="text-base font-semibold text-black tracking-wide uppercase">JewelryStore</h2>
+            <p class="mt-2 text-3xl font-extrabold text-black sm:text-4xl">
+                Your trustable Jewelry Collection
+            </p>
+            <p class="mt-4 max-w-2xl text-xl text-black mx-auto">
+                Discover handcrafted pieces in gold, silver, and pearls.
+            </p>
+        </div>
+
+        <div class="mt-12">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {% for jewelry_item in jewelry_items %}
+                <div class="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white">
+                    {% if jewelry_item.image %}
+                        <div class="h-48 overflow-hidden">
+                            <img src="{{ jewelry_item.image.url }}" alt="{{ jewelry_item.name }}" class="w-full h-full object-cover">
+                        </div>
+                    {% else %}
+                        <div class="h-48 bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                            </svg>
+                        </div>
+                    {% endif %}
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-600 text-white">
+                                {{ jewelry_item.get_item_type_display }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-black mb-2">{{ jewelry_item.category.name }}</p>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div>
+                                <span class="text-2xl font-bold text-black">{{ jewelry_item.price|floatformat:0 }} RWF</span>
+        
+                            </div>
+                            <div class="flex space-x-2">
+                                {% if user.is_authenticated and jewelry_item.is_available %}
+                                    <a href="{% url 'purchase_form' jewelry_item.id %}" class="bg-rose-600 text-white px-3 py-1 rounded text-sm hover:bg-rose-700 transition-colors">
+                                        Buy Now
+                                    </a>
+                                {% elif not user.is_authenticated and jewelry_item.is_available %}
+                                    <a href="{% url 'login' %}?next={% url 'purchase_form' jewelry_item.id %}" class="bg-rose-600 text-white px-3 py-1 rounded text-sm hover:bg-rose-700 transition-colors">
+                                        Buy Now
+                                    </a>
+                                {% elif not jewelry_item.is_available %}
+                                    <span class="bg-green-100 bg-opacity-60 text-green-700 px-3 py-1 rounded text-sm">
+                                        Sold Out
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-black">No jewelry found</h3>
+                    <p class="mt-1 text-sm text-black">Try adjusting your search criteria.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+{% block extra_js %}
+<script>
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

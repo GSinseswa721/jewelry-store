@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-2xl border-2 border-rose-100 mt-10">
+    <h2 class="text-3xl font-extrabold mb-8 text-center text-rose-700 tracking-tight">Update Your Profile</h2>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+        
+        <div class="space-y-2">
+            <label for="username" class="block text-sm font-semibold text-rose-700">Username</label>
+            <div class="relative">
+                {{ user_form.username }}
+                {% if user_form.username.errors %}
+                    <div class="text-red-500 text-xs mt-1">
+                        {% for error in user_form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="space-y-2">
+            <label for="email" class="block text-sm font-semibold text-rose-700">Email</label>
+            <div class="relative">
+                {{ user_form.email }}
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label for="profile_image" class="block text-sm font-semibold text-rose-700">Profile Picture</label>
+            <div class="relative flex items-center gap-4">
+                {% if profile_form.instance.profile_image %}
+                    <img src="{{ profile_form.instance.profile_image.url }}" alt="Current Profile Image" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow">
+                {% else %}
+                    <div class="w-20 h-20 rounded-full bg-rose-100 flex items-center justify-center border-4 border-rose-200 shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4a4 4 0 110 8 4 4 0 010-8zm0 14c-4.418 0-8-1.79-8-4V6a2 2 0 012-2h12a2 2 0 012 2v8c0 2.21-3.582 4-8 4z" />
+                        </svg>
+                    </div>
+                {% endif %}
+                <div class="flex-1">
+                    {{ profile_form.profile_image }}
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label for="bio" class="block text-sm font-semibold text-rose-700">Bio</label>
+            <div class="relative">
+                {{ profile_form.bio }}
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label for="phone" class="block text-sm font-semibold text-rose-700">Phone</label>
+            <div class="relative">
+                {{ profile_form.phone }}
+                {% if profile_form.phone.errors %}
+                    <div class="text-red-500 text-xs mt-1">
+                        {% for error in profile_form.phone.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label for="address" class="block text-sm font-semibold text-rose-700">Address</label>
+            <div class="relative">
+                {{ profile_form.address }}
+            </div>
+        </div>
+
+        <div>
+            <button type="submit" class="w-full bg-rose-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-rose-700 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none font-bold text-lg tracking-wide">
+                Update Profile
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

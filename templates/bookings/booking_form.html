@@ -1,0 +1,100 @@
+<!-- templates/bookings/booking_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}Book Your Ticket{% endblock %}
+
+{% block content %}
+<div class="py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-indigo-600 p-6 text-white">
+                <h2 class="text-2xl font-bold">Book Your Ticket</h2>
+                <p class="mt-2">Select your preferences and secure your seat.</p>
+            </div>
+            
+            <div class="p-6">
+                <form method="post" class="space-y-6" x-data="{ ticketType: '', price: 0, quantity: 1, totalPrice: 0, updatePrice() { this.totalPrice = (this.price * this.quantity).toFixed(2); } }">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <!-- Seat Selection -->
+                        <div>
+                            <label for="id_seat" class="block text-sm font-medium text-gray-700 mb-1">Select Seat</label>
+                            {{ form.seat }}
+                            {% if form.seat.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.seat.errors }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Ticket Type Selection -->
+                        <div>
+                            <label for="id_ticket_type" class="block text-sm font-medium text-gray-700 mb-1">Ticket Type</label>
+                            <select 
+                                name="ticket_type" 
+                                id="id_ticket_type" 
+                                class="form-select rounded-lg border-gray-300 w-full"
+                                x-model="ticketType"
+                                @change="
+                                    fetch(`/get-price/?ticket_type_id=${ticketType}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            price = data.price;
+                                            updatePrice();
+                                        })
+                                "
+                            >
+                                <option value="">Select a ticket type</option>
+                                {% for value, text in form.ticket_type.field.choices %}
+                                <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if form.ticket_type.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.ticket_type.errors }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Quantity -->
+                        <div>
+                            <label for="id_quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <input 
+                                type="number" 
+                                name="quantity" 
+                                id="id_quantity" 
+                                min="1" 
+                                max="10" 
+                                class="form-input rounded-lg border-gray-300 w-full"
+                                x-model="quantity"
+                                @change="updatePrice()"
+                                value="1"
+                            >
+                            {% if form.quantity.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.quantity.errors }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Price Display (Read-only) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Price</label>
+                            <div class="bg-gray-100 p-3 rounded-lg border border-gray-300">
+                                <span class="text-lg font-semibold" x-text="`$${totalPrice}`">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="mt-8">
+                        <button 
+                            type="submit" 
+                            class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition duration-150 ease-in-out"
+                            :disabled="!ticketType"
+                            :class="{'opacity-50 cursor-not-allowed': !ticketType, 'hover:bg-indigo-700': ticketType}"
+                        >
+                            Complete Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
